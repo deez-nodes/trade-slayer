@@ -1,2 +1,29 @@
 @import "@nuxt/ui";
 @import "tailwindcss";
+
+@theme {
+    --color-primary-50: #fefff0;
+    --color-primary-100: #fdffe0;
+    --color-primary-200: #f5ffb0;
+    --color-primary-300: #ecff70;
+    --color-primary-400: #ecff57;
+    --color-primary-500: #e8ff47;
+    --color-primary-600: #c4d83c;
+    --color-primary-700: #9aaa2f;
+    --color-primary-800: #717c22;
+    --color-primary-900: #484e16;
+    --color-primary-950: #2a2d0d;
+
+    --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+:root {
+    --ts-bg: #080a0c;
+    --ts-surface: #0e1114;
+    --ts-surface2: #161b20;
+    --ts-border: #232a31;
+    --ts-accent: #ecff57;
+    --ts-text: #d4dde6;
+    --ts-muted: #6b7d8e;
+}
