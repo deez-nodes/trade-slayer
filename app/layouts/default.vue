@@ -11,8 +11,12 @@
         </UDashboardSidebar>
 
         <UDashboardPanel>
-            <UDashboardNavbar title="Dashboard" />
-            <slot />
+            <template #header>
+                <UDashboardNavbar title="Dashboard" />
+            </template>
+            <template #body>
+                <slot />
+            </template>
         </UDashboardPanel>
     </UDashboardGroup>
 </template>
