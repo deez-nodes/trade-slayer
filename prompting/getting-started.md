@@ -45,29 +45,49 @@ Pick the branch you want to work from:
 git checkout dashboard_chart
 ```
 
-## 5. Using the Prompt Builder
+## 5. Using the Prompt Manager
 
-Open `prompting/prompt-builder.html` in any browser. It's a self-contained tool — no server needed.
+Open `prompting/tradeslayer-prompt-manager.html` in any browser. It's a self-contained tool — no server needed.
 
 **How it works:**
 1. Open the HTML file directly in your browser (double-click or `File > Open`)
-2. Pick a task template or write your own prompt
-3. Paste in any relevant context from the project (CLAUDE.md, component code, etc.)
-4. Click **Copy Prompt** to get a ready-to-paste prompt for Claude
-5. You can save your prompts as `.md` files wherever you like — the `prompting/` folder is a good default
+2. Set the **base dir** in the top-right to your project path (e.g. `~/projects/tradeslayer`)
+3. Switch between **Prompts** and **Tasks** modes using the tabs
+4. Pick a template — there are general templates (Promptology, Dev/Code) and TradeSlayer-specific ones (Signal Engine, Frontend Component, Schema/DB, Debug Session)
+5. Fill in the structured fields, attach file paths, and the **Output Preview** builds your prompt in real time
+6. Click **Copy Prompt** to paste directly into Claude, or **Save .md** to download it
 
-**Tip:** You can save the prompt builder HTML anywhere on your machine. It works offline and has zero dependencies.
+**Tips:**
+- You can save the HTML anywhere on your machine — it works offline, zero dependencies
+- Prompts are saved in your browser's local storage, so they persist between sessions
+- You can choose any directory to save exported `.md` prompts — the `prompting/` folder is a good default
+- Use **Export All** to dump every saved prompt into a single `.md` file
 
-## 6. Project Context Files
+## 6. What's in This Folder
 
-These files give Claude (or you) quick context about the codebase:
+| File | What it is |
+|------|-----------|
+| `tradeslayer-prompt-manager.html` | Self-contained prompt builder tool (open in browser) |
+| `addChart.md` | Prompt: add TradingView Advanced Chart widget to the dashboard |
+| `bookmap_setup.md` | Prompt: Bookmap setup for spotting icebergs, absorption, liquidity |
+| `charting-library-context.txt` | TradingView Charting Library full API reference (types + docs) — feed this to Claude when working on chart features |
+| `gemini_cards.vue` | Reference: strategy card component with Bookmap-based strategies (Heatmap Absorption, Liquidity Flip) |
+| `getting-started.md` | This file |
+
+## 7. Project Context Files
 
 | File | What it covers |
 |------|---------------|
-| `CLAUDE.md` | Project conventions, layout patterns, component choices |
-| `prompting/nuxt-llm-context.txt` | Nuxt 4 framework reference (routing, auto-imports, SFCs) |
+| `CLAUDE.md` | Project conventions, layout patterns, component choices, TODOs |
+| `nuxt-llm.txt` | Nuxt 4 framework reference (routing, auto-imports, SFCs) |
 
-## 7. Common Tasks
+## 8. Common Tasks
+
+**Add the chart widget (next TODO):**
+```
+Feed Claude the charting library context and the addChart prompt:
+@prompting/charting-library-context.txt @prompting/addChart.md
+```
 
 **Ask Claude to build something:**
 ```
@@ -84,7 +104,7 @@ The sidebar disappears on mobile. Fix the responsive layout.
 How does the layout system work? Walk me through app.vue → default.vue → page.
 ```
 
-## 8. Key Conventions
+## 9. Key Conventions
 
 - Always use `pnpm` (never `npm`)
 - CSS goes in `<style module>` blocks, referenced as `$style.className`
