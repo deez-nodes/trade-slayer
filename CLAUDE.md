@@ -56,6 +56,12 @@ UDashboardGroup
 - **UPageCard** — marketing/landing page cards with spotlight effects; use **UCard** for dashboard data cards
 - **UPageBody** — adds `mt-8 pb-24 space-y-12`, designed for content/marketing pages, NOT dashboard panels
 
+## TODO: Dashboard Chart Widget (`pages/index.vue`)
+- Add the TradingView Advanced Chart widget to the dashboard page
+- Default symbol should be MES (Micro E-mini S&P 500) or NQ (Nasdaq) — NOT AAPL or any single stock
+- The chart should render inside the `UDashboardPanel` `#body` slot (same pattern as strategies page)
+- Use `<style module>` for any chart container styling — no inline class strings
+
 ## Commands
 - `pnpm dev` — Start dev server
 - `pnpm build` — Production build
