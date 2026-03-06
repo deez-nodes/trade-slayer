@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TradeSlayer Prompt Builder</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --border: #2a2a2a;
+    --text: #e5e5e5;
+    --muted: #888;
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --green: #22c55e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; padding: 2rem;
+  }
+  h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; }
+  .subtitle { color: var(--muted); font-size: 0.875rem; margin-bottom: 2rem; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 0.5rem; padding: 1.25rem;
+  }
+  .panel h2 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+  label { display: block; font-size: 0.8125rem; color: var(--muted); margin-bottom: 0.375rem; font-weight: 500; }
+
+  select, textarea, input[type="text"] {
+    width: 100%; background: var(--bg); color: var(--text);
+    border: 1px solid var(--border); border-radius: 0.375rem;
+    padding: 0.625rem 0.75rem; font-size: 0.875rem; font-family: inherit;
+    outline: none; transition: border-color 0.15s;
+  }
+  select:focus, textarea:focus, input[type="text"]:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 6rem; line-height: 1.5; }
+
+  .field { margin-bottom: 1rem; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.625rem 1.25rem; border-radius: 0.375rem;
+    font-size: 0.875rem; font-weight: 500; cursor: pointer;
+    border: none; transition: background 0.15s;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-secondary { background: var(--border); color: var(--text); }
+  .btn-secondary:hover { background: #333; }
+  .btn-success { background: var(--green); color: #fff; }
+
+  .actions { display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap; }
+
+  #output {
+    width: 100%; min-height: 14rem; background: var(--bg);
+    color: var(--text); border: 1px solid var(--border); border-radius: 0.375rem;
+    padding: 0.75rem; font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 0.8125rem; line-height: 1.6; resize: vertical;
+  }
+
+  .toast {
+    position: fixed; bottom: 1.5rem; right: 1.5rem;
+    background: var(--green); color: #fff; padding: 0.75rem 1.25rem;
+    border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500;
+    opacity: 0; transform: translateY(0.5rem);
+    transition: opacity 0.2s, transform 0.2s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  .saved-list { margin-top: 1rem; }
+  .saved-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.5rem 0.75rem; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 0.375rem; margin-bottom: 0.5rem; font-size: 0.8125rem;
+  }
+  .saved-item button {
+    background: none; border: none; color: var(--accent);
+    cursor: pointer; font-size: 0.8125rem; padding: 0.25rem 0.5rem;
+  }
+  .saved-item button:hover { text-decoration: underline; }
+  .saved-item .delete { color: #ef4444; }
+</style>
+</head>
+<body>
+
+<h1>TradeSlayer Prompt Builder</h1>
+<p class="subtitle">Build prompts for Claude. Copy to clipboard or save for later. Works offline, zero dependencies.</p>
+
+<div class="grid">
+  <div>
+    <div class="panel">
+      <h2>Build Your Prompt</h2>
+
+      <div class="field">
+        <label>Task Template</label>
+        <select id="template" onchange="applyTemplate()">
+          <option value="">Start from scratch...</option>
+          <option value="feature">Add a Feature</option>
+          <option value="fix">Fix a Bug</option>
+          <option value="refactor">Refactor Code</option>
+          <option value="component">Create a Component</option>
+          <option value="explain">Explain Code</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Task Description</label>
+        <textarea id="task" rows="4" placeholder="Describe what you want Claude to do..."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Relevant Files (optional)</label>
+        <input type="text" id="files" placeholder="e.g. app/pages/index.vue, app/components/Chart.vue">
+      </div>
+
+      <div class="field">
+        <label>Extra Context (optional)</label>
+        <textarea id="context" rows="4" placeholder="Paste code snippets, error messages, or design notes..."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Constraints / Notes (optional)</label>
+        <textarea id="constraints" rows="2" placeholder="e.g. Must use UCard not UPageCard, follow CSS module conventions..."></textarea>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" onclick="buildPrompt()">Build Prompt</button>
+        <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top: 1.5rem;">
+      <h2>Saved Prompts</h2>
+      <p style="color: var(--muted); font-size: 0.8125rem; margin-bottom: 0.75rem;">
+        Saved in your browser's local storage. Export as .md to share.
+      </p>
+      <div id="savedList" class="saved-list"></div>
+      <div class="actions">
+        <button class="btn btn-secondary" onclick="exportAll()">Export All as .md</button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel" style="position: sticky; top: 2rem;">
+      <h2>Generated Prompt</h2>
+      <textarea id="output" readonly placeholder="Your prompt will appear here..."></textarea>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="copyPrompt()">Copy to Clipboard</button>
+        <button class="btn btn-secondary" onclick="savePrompt()">Save Prompt</button>
+        <button class="btn btn-secondary" onclick="downloadPrompt()">Download as .md</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const templates = {
+  feature: {
+    task: "Add [FEATURE NAME] to [PAGE/COMPONENT].\n\nExpected behavior:\n- \n- \n\nDesign notes:\n- ",
+    constraints: "Follow the patterns in CLAUDE.md. Use <style module> for CSS. Use UCard for dashboard cards."
+  },
+  fix: {
+    task: "Fix: [DESCRIBE THE BUG]\n\nSteps to reproduce:\n1. \n2. \n\nExpected: \nActual: ",
+    constraints: ""
+  },
+  refactor: {
+    task: "Refactor [FILE/COMPONENT] to improve [WHAT].\n\nCurrent issue:\n- \n\nDesired outcome:\n- ",
+    constraints: "Don't change external behavior. Keep all existing functionality working."
+  },
+  component: {
+    task: "Create a new component: [NAME]\n\nProps:\n- \n\nBehavior:\n- \n\nWhere it's used:\n- ",
+    constraints: "Use <script setup lang=\"ts\">. Use <style module> for CSS. Use $style.className in templates."
+  },
+  explain: {
+    task: "Explain how [FEATURE/FLOW] works in this codebase.\n\nSpecifically:\n- \n- ",
+    constraints: ""
+  }
+};
+
+function applyTemplate() {
+  const key = document.getElementById('template').value;
+  if (!key) return;
+  const t = templates[key];
+  document.getElementById('task').value = t.task;
+  document.getElementById('constraints').value = t.constraints;
+}
+
+function buildPrompt() {
+  const task = document.getElementById('task').value.trim();
+  const files = document.getElementById('files').value.trim();
+  const context = document.getElementById('context').value.trim();
+  const constraints = document.getElementById('constraints').value.trim();
+
+  if (!task) { showToast('Write a task description first'); return; }
+
+  let prompt = `# Task\n${task}\n`;
+  if (files) prompt += `\n# Relevant Files\n${files}\n`;
+  if (context) prompt += `\n# Context\n${context}\n`;
+  if (constraints) prompt += `\n# Constraints\n${constraints}\n`;
+  prompt += `\n# Output\nFollow the conventions in CLAUDE.md. Show me the changes before committing.`;
+
+  document.getElementById('output').value = prompt;
+  showToast('Prompt built!');
+}
+
+function copyPrompt() {
+  const output = document.getElementById('output');
+  if (!output.value) { showToast('Build a prompt first'); return; }
+  navigator.clipboard.writeText(output.value).then(() => showToast('Copied to clipboard!'));
+}
+
+function clearForm() {
+  document.getElementById('template').value = '';
+  document.getElementById('task').value = '';
+  document.getElementById('files').value = '';
+  document.getElementById('context').value = '';
+  document.getElementById('constraints').value = '';
+  document.getElementById('output').value = '';
+}
+
+function savePrompt() {
+  const text = document.getElementById('output').value.trim();
+  if (!text) { showToast('Build a prompt first'); return; }
+  const saved = JSON.parse(localStorage.getItem('ts_prompts') || '[]');
+  const name = prompt('Name this prompt:', 'Prompt ' + (saved.length + 1));
+  if (!name) return;
+  saved.push({ name, text, date: new Date().toISOString().slice(0, 10) });
+  localStorage.setItem('ts_prompts', JSON.stringify(saved));
+  renderSaved();
+  showToast('Saved!');
+}
+
+function loadPrompt(i) {
+  const saved = JSON.parse(localStorage.getItem('ts_prompts') || '[]');
+  document.getElementById('output').value = saved[i].text;
+  showToast('Loaded: ' + saved[i].name);
+}
+
+function deletePrompt(i) {
+  const saved = JSON.parse(localStorage.getItem('ts_prompts') || '[]');
+  saved.splice(i, 1);
+  localStorage.setItem('ts_prompts', JSON.stringify(saved));
+  renderSaved();
+}
+
+function renderSaved() {
+  const saved = JSON.parse(localStorage.getItem('ts_prompts') || '[]');
+  const el = document.getElementById('savedList');
+  if (!saved.length) { el.innerHTML = '<p style="color:var(--muted);font-size:0.8125rem;">No saved prompts yet.</p>'; return; }
+  el.innerHTML = saved.map((s, i) =>
+    `<div class="saved-item">
+      <span>${s.name} <span style="color:var(--muted)">(${s.date})</span></span>
+      <span>
+        <button onclick="loadPrompt(${i})">Load</button>
+        <button class="delete" onclick="deletePrompt(${i})">Delete</button>
+      </span>
+    </div>`
+  ).join('');
+}
+
+function downloadPrompt() {
+  const text = document.getElementById('output').value.trim();
+  if (!text) { showToast('Build a prompt first'); return; }
+  const blob = new Blob([text], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'prompt-' + new Date().toISOString().slice(0, 10) + '.md';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function exportAll() {
+  const saved = JSON.parse(localStorage.getItem('ts_prompts') || '[]');
+  if (!saved.length) { showToast('No saved prompts to export'); return; }
+  const md = saved.map(s => `## ${s.name} (${s.date})\n\n${s.text}`).join('\n\n---\n\n');
+  const blob = new Blob([md], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'all-prompts-' + new Date().toISOString().slice(0, 10) + '.md';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+renderSaved();
+</script>
+</body>
+</html>
