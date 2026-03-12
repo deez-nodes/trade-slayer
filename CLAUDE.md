@@ -16,10 +16,42 @@ app/
 ├── app.vue              # Root component (UApp > NuxtLayout > NuxtPage)
 ├── assets/css/main.css  # Global CSS imports (Nuxt UI + Tailwind)
 ├── layouts/default.vue  # Dashboard layout with sidebar nav
+├── types/
+│   └── strategy.ts      # Strategy card types (StrategyColor, CardMeta, etc.)
+├── composables/
+│   ├── useLLM.ts        # LLM chat interface (local LM Studio)
+│   └── useStrategyColors.ts  # Shared color palette + hex-alpha utility
+├── components/
+│   ├── StrategyCard.vue         # Legacy simple checklist card (used on strategies page)
+│   ├── TradingViewChart.vue     # TradingView widget wrapper
+│   └── strategy/                # Strategy reference card system
+│       ├── StrategyCardShell.vue     # Shared card shell (header, tabs, footer)
+│       ├── StrategyCheckbox.vue      # Toggleable checklist item
+│       ├── StrategySection.vue       # Collapsible accordion section
+│       ├── StrategyPill.vue          # Inline colored badge
+│       ├── StrategyDivider.vue       # Labeled separator
+│       ├── StrategyRefTag.vue        # Cross-card reference link
+│       ├── StrategyInfoBox.vue       # Colored info/alert box
+│       ├── ImbalanceStrategyCard.vue  # Atomic: bid/ask imbalance
+│       ├── AbsorptionExhaustionSpoofCard.vue  # Atomic: absorption/exhaustion/spoof
+│       ├── CvdStrategyCard.vue        # Atomic: cumulative volume delta
+│       ├── IcebergStrategyCard.vue    # Atomic: iceberg detection
+│       ├── LargeLotsStrategyCard.vue  # Atomic: large lot prints
+│       ├── LiquidityRegimeCard.vue    # Atomic: liquidity regime
+│       ├── LiquidityTrackerProCard.vue  # Atomic: liquidity tracker
+│       ├── SessionVolumeProfileCard.vue # Atomic: session volume profile
+│       ├── StopRunStrategyCard.vue    # Atomic: stop run patterns
+│       ├── SupportResistanceStrategyCard.vue  # Atomic: S/R levels
+│       ├── VolumeBubblesStrategyCard.vue  # Atomic: volume bubbles
+│       ├── MomentumStrategyCard.vue   # Composite: momentum continuation
+│       ├── PullbackStrategyCard.vue   # Composite: pullback entries
+│       └── ReversalStrategyCard.vue   # Composite: reversal plays
 ├── pages/
 │   ├── index.vue        # Dashboard page
 │   ├── journal.vue      # Journal page
-│   └── strategies.vue   # Strategies page
+│   ├── strategies.vue   # Strategies page (card grid)
+│   └── strategies/
+│       └── [id].vue     # Individual strategy card viewer
 ```
 
 ## Conventions
@@ -55,6 +87,24 @@ UDashboardGroup
 - **UPageColumns** — CSS masonry columns, use for variable-height content
 - **UPageCard** — marketing/landing page cards with spotlight effects; use **UCard** for dashboard data cards
 - **UPageBody** — adds `mt-8 pb-24 space-y-12`, designed for content/marketing pages, NOT dashboard panels
+
+## Strategy Card Architecture
+Converted from React JSX prototypes in `card_designs/` to native Vue 3 SFCs.
+
+### Design decisions
+- **14 separate SFC files** (not a data-driven single component) for template clarity and debuggability
+- **7 shared sub-components** in `components/strategy/` extract all repeated UI patterns
+- **StrategyCardShell** wraps every card with header (icon, title, pills), tab bar, content slot, and footer
+- **StrategyColor** type (`'long'|'short'|'warn'|'info'|'neutral'|'cyan'|'purple'|'orange'`) is the single source of truth for the color palette
+- **useStrategyColors()** composable provides `hex()` and `hexAlpha()` — no raw hex strings in components
+- **11 atomic cards**: single-indicator reference checklists (tabs: SETUP/READ/LONG/SHORT/RISK or similar)
+- **3 composite cards** (Momentum, Pullback, Reversal): compose multiple indicators, have LOG tabs with reactive form state, cross-reference other cards via `StrategyRefTag`
+- Cards are mounted at `/strategies/:id` via a dynamic route; the strategies index page shows a card grid linking to each
+
+### Adding a new strategy card
+1. Create `app/components/strategy/NewCard.vue` following the ImbalanceStrategyCard pattern
+2. Add the card to the `allCards` array in `pages/strategies/[id].vue`
+3. Add it to the grid in `pages/strategies.vue`
 
 ## TODO: Dashboard Chart Widget (`pages/index.vue`)
 - Add the TradingView Advanced Chart widget to the dashboard page
