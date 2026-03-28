@@ -54,14 +54,35 @@ body {
 }
 
 #header-logo {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 18px;
-  letter-spacing: 0.12em;
-  color: var(--acc);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px;
+  font-weight: 300;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--text);
   white-space: nowrap;
+  position: relative;
+  display: inline-block;
+  padding: 2px 0;
 }
 
-#header-logo span { color: var(--muted2); font-size: 12px; letter-spacing: 0.08em; margin-left: 8px; font-family: 'IBM Plex Mono', monospace; }
+#header-logo::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--muted) 15%, var(--muted) 85%, transparent 100%);
+  opacity: 0.4;
+}
+
+#header-logo span {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  margin-left: 10px;
+  font-weight: 400;
+}
 
 #mode-tabs {
   display: flex;
@@ -75,7 +96,7 @@ body {
 .mode-tab {
   padding: 4px 14px;
   border-radius: 3px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -103,10 +124,10 @@ body {
   min-width: 260px;
 }
 
-#basedir-label { font-size: 9px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }
+#basedir-label { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }
 #basedir-input {
   background: none; border: none; color: var(--blue);
-  font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 12px;
   outline: none; flex: 1; min-width: 0;
 }
 #basedir-input::placeholder { color: var(--muted); }
@@ -130,7 +151,7 @@ body {
 
 #sidebar-section {
   padding: 10px 10px 6px;
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--muted);
@@ -161,7 +182,7 @@ body {
 .list-item.active .item-title { color: var(--acc); }
 
 .item-title {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text);
   white-space: nowrap;
@@ -177,7 +198,7 @@ body {
 }
 
 .item-badge {
-  font-size: 8px;
+  font-size: 9px;
   padding: 1px 5px;
   border-radius: 2px;
   letter-spacing: 0.08em;
@@ -189,7 +210,7 @@ body {
 .badge-done { background: #1a2a1a; color: var(--green); }
 .badge-blocked { background: var(--red-dim); color: var(--red); }
 
-.item-date { font-size: 9px; color: var(--muted); }
+.item-date { font-size: 10px; color: var(--muted); }
 
 .item-del {
   position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
@@ -207,7 +228,7 @@ body {
   border-radius: 4px;
   color: var(--muted);
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   cursor: pointer;
   transition: all 0.15s;
   letter-spacing: 0.06em;
@@ -247,7 +268,7 @@ body {
   border: 1px solid var(--border);
   padding: 5px 10px; border-radius: 4px;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; outline: none; cursor: pointer;
+  font-size: 11px; outline: none; cursor: pointer;
 }
 #template-select:focus, #status-select:focus { border-color: var(--acc); }
 
@@ -284,13 +305,13 @@ body {
 }
 
 .field-name {
-  font-size: 9px; font-weight: 600;
+  font-size: 10px; font-weight: 600;
   letter-spacing: 0.14em; text-transform: uppercase;
   color: var(--acc);
   font-family: 'IBM Plex Mono', monospace;
 }
 
-.field-hint { margin-left: auto; font-size: 9px; color: var(--muted); }
+.field-hint { margin-left: auto; font-size: 10px; color: var(--muted); }
 
 /* File pills row */
 .file-row {
@@ -311,7 +332,7 @@ body {
   background: var(--blue-dim);
   border: 1px solid #003a5e;
   color: var(--blue);
-  font-size: 10px;
+  font-size: 11px;
   padding: 2px 6px;
   border-radius: 3px;
   cursor: default;
@@ -331,7 +352,7 @@ body {
   background: none; border: none;
   color: var(--blue);
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
+  font-size: 11px;
   outline: none;
   min-width: 120px;
   flex: 1;
@@ -343,13 +364,13 @@ body {
   background: none; border: none;
   color: var(--text);
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px; line-height: 1.75;
+  font-size: 13px; line-height: 1.75;
   padding: 10px 12px;
   resize: none; outline: none;
   min-height: 72px;
   overflow-y: hidden;
 }
-.field-ta::placeholder { color: var(--muted); font-size: 11px; }
+.field-ta::placeholder { color: var(--muted); font-size: 12px; }
 
 /* ── ACTIONS BAR ── */
 #actions {
@@ -366,7 +387,7 @@ body {
   padding: 7px 16px;
   border-radius: 4px; border: none;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; font-weight: 600;
+  font-size: 11px; font-weight: 600;
   cursor: pointer; transition: all 0.15s;
   letter-spacing: 0.07em; text-transform: uppercase;
 }
@@ -377,7 +398,7 @@ body {
 .btn-danger { background: var(--red-dim); color: var(--red); border: 1px solid #5a1020; }
 .btn-danger:hover { background: #5a1020; }
 
-#char-count { margin-left: auto; font-size: 10px; color: var(--muted); }
+#char-count { margin-left: auto; font-size: 11px; color: var(--muted); }
 
 /* ── PREVIEW PANEL ── */
 #preview-panel {
@@ -392,7 +413,7 @@ body {
 #preview-header {
   padding: 10px 14px;
   border-bottom: 1px solid var(--border);
-  font-size: 9px;
+  font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
@@ -405,7 +426,7 @@ body {
 #preview-copy {
   background: none; border: 1px solid var(--border2);
   color: var(--muted2); font-family: 'IBM Plex Mono', monospace;
-  font-size: 9px; padding: 3px 10px; border-radius: 3px;
+  font-size: 10px; padding: 3px 10px; border-radius: 3px;
   cursor: pointer; letter-spacing: 0.06em; transition: all 0.15s;
 }
 #preview-copy:hover { border-color: var(--acc); color: var(--acc); }
@@ -414,7 +435,7 @@ body {
   flex: 1;
   overflow-y: auto;
   padding: 14px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.8;
   color: var(--muted2);
   white-space: pre-wrap;
@@ -435,11 +456,22 @@ body {
   color: var(--muted);
 }
 #empty-glyph {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 72px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 48px;
+  font-weight: 300;
   color: var(--surface3);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
   line-height: 1;
+  position: relative;
+}
+#empty-glyph::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 50%;
+  height: 1px;
+  background: var(--border);
 }
 
 /* ── TOAST ── */
@@ -447,7 +479,7 @@ body {
   position: fixed; bottom: 20px; right: 20px;
   background: var(--acc); color: #000;
   font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px; font-weight: 600;
+  font-size: 11px; font-weight: 600;
   padding: 8px 16px; border-radius: 4px;
   opacity: 0; transform: translateY(6px);
   transition: all 0.18s; pointer-events: none;
@@ -1027,12 +1059,87 @@ function autoResize(ta) {
 }
 
 function handleTabNav(e) {
-  if (e.key !== 'Tab') return;
-  e.preventDefault();
-  const all = [...document.querySelectorAll('.field-ta:not([style*="display: none"])')];
-  const idx = all.indexOf(e.target);
-  if (e.shiftKey && all[idx - 1]) all[idx - 1].focus();
-  else if (!e.shiftKey && all[idx + 1]) all[idx + 1].focus();
+  const ta = e.target;
+
+  // Tab / Shift+Tab → indent / unindent
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const val = ta.value;
+
+    if (start === end) {
+      // No selection — insert or remove 2 spaces at cursor
+      if (e.shiftKey) {
+        // Unindent: find line start, remove up to 2 leading spaces
+        const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+        const line = val.slice(lineStart);
+        const spaces = line.match(/^ {1,2}/);
+        if (spaces) {
+          ta.value = val.slice(0, lineStart) + line.slice(spaces[0].length);
+          ta.selectionStart = ta.selectionEnd = Math.max(lineStart, start - spaces[0].length);
+        }
+      } else {
+        ta.value = val.slice(0, start) + '  ' + val.slice(end);
+        ta.selectionStart = ta.selectionEnd = start + 2;
+      }
+    } else {
+      // Selection — indent/unindent each line
+      const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+      const block = val.slice(lineStart, end);
+      let result;
+      if (e.shiftKey) {
+        result = block.replace(/^( {1,2})/gm, '');
+      } else {
+        result = block.replace(/^/gm, '  ');
+      }
+      ta.value = val.slice(0, lineStart) + result + val.slice(end);
+      ta.selectionStart = lineStart;
+      ta.selectionEnd = lineStart + result.length;
+    }
+    saveCurrent();
+    autoResize(ta);
+    return;
+  }
+
+  // Enter → list autocomplete
+  if (e.key === 'Enter') {
+    const start = ta.selectionStart;
+    const val = ta.value;
+    const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+    const line = val.slice(lineStart, start);
+
+    // Match list prefixes: "  - ", "* ", "1. ", "  2. ", etc.
+    const listMatch = line.match(/^(\s*)([-*]\s|(\d+)\.\s)/);
+    if (listMatch) {
+      const indent = listMatch[1];
+      const bullet = listMatch[2];
+      const num = listMatch[3];
+
+      // If current line is empty except the bullet, clear it instead
+      const content = line.slice(listMatch[0].length);
+      if (!content.trim()) {
+        e.preventDefault();
+        ta.value = val.slice(0, lineStart) + '\n' + val.slice(start);
+        ta.selectionStart = ta.selectionEnd = lineStart + 1;
+        saveCurrent();
+        autoResize(ta);
+        return;
+      }
+
+      e.preventDefault();
+      let next;
+      if (num) {
+        next = indent + (parseInt(num) + 1) + '. ';
+      } else {
+        next = indent + bullet;
+      }
+      ta.value = val.slice(0, start) + '\n' + next + val.slice(start);
+      ta.selectionStart = ta.selectionEnd = start + 1 + next.length;
+      saveCurrent();
+      autoResize(ta);
+    }
+  }
 }
 
 function toast(msg) {
