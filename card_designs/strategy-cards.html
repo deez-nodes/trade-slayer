@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MES Order Flow — Strategy Cards</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c0f;
+    --surface: #0f1216;
+    --border: #1c2028;
+    --border-bright: #2a3040;
+    --text: #c8d0dc;
+    --text-dim: #5a6478;
+    --text-muted: #3a4458;
+    --green: #00d4a0;
+    --green-dim: #00d4a015;
+    --red: #ff4560;
+    --red-dim: #ff456010;
+    --yellow: #f0b040;
+    --yellow-dim: #f0b04010;
+    --blue: #4090ff;
+    --blue-dim: #4090ff10;
+    --orange: #ff7040;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    padding: 32px 24px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header h1 {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .header .instrument {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.05em;
+  }
+
+  .header .level {
+    font-size: 11px;
+    color: var(--yellow);
+    letter-spacing: 0.1em;
+  }
+
+  .header .level::before { content: '⚑ '; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 1px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 1px;
+  }
+
+  .grid-full {
+    border: 1px solid var(--border);
+    margin-bottom: 1px;
+  }
+
+  .card {
+    background: var(--surface);
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 2px;
+    height: 100%;
+  }
+
+  .card.green::before { background: var(--green); }
+  .card.red::before { background: var(--red); }
+  .card.yellow::before { background: var(--yellow); }
+  .card.blue::before { background: var(--blue); }
+  .card.orange::before { background: var(--orange); }
+  .card.neutral::before { background: var(--border-bright); }
+
+  .card-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-label .tag {
+    padding: 1px 6px;
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    border-radius: 2px;
+  }
+
+  .tag.composable { background: var(--blue-dim); color: var(--blue); border: 1px solid var(--blue)30; }
+  .tag.trigger { background: var(--yellow-dim); color: var(--yellow); border: 1px solid var(--yellow)30; }
+  .tag.filter { background: var(--red-dim); color: var(--red); border: 1px solid var(--red)30; }
+  .tag.confirm { background: var(--green-dim); color: var(--green); border: 1px solid var(--green)30; }
+  .tag.exit { background: #ffffff08; color: var(--text-dim); border: 1px solid var(--border-bright); }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+  }
+
+  .card-title .glyph {
+    margin-right: 6px;
+    opacity: 0.7;
+  }
+
+  .rule-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .rule-list li {
+    display: grid;
+    grid-template-columns: 14px 1fr;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.45;
+  }
+
+  .rule-list li .bullet {
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+
+  .rule-list li .val {
+    font-family: var(--mono);
+    font-weight: 500;
+  }
+
+  .val.green { color: var(--green); }
+  .val.red { color: var(--red); }
+  .val.yellow { color: var(--yellow); }
+  .val.blue { color: var(--blue); }
+  .val.orange { color: var(--orange); }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 12px 0;
+  }
+
+  .condition-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .condition-row .op {
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    width: 28px;
+    flex-shrink: 0;
+  }
+
+  .condition-row .cond {
+    color: var(--text-dim);
+    flex: 1;
+  }
+
+  .condition-row .source {
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* Absorption card specific */
+  .signal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .signal-box {
+    padding: 8px 10px;
+    border-radius: 2px;
+    border: 1px solid;
+  }
+
+  .signal-box.bull { background: var(--green-dim); border-color: var(--green)20; }
+  .signal-box.bear { background: var(--red-dim); border-color: var(--red)20; }
+
+  .signal-box .sig-label {
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .signal-box.bull .sig-label { color: var(--green); }
+  .signal-box.bear .sig-label { color: var(--red); }
+
+  .signal-box .sig-text {
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  /* Spoof detection */
+  .spoof-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+  }
+
+  .spoof-table th {
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: left;
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .spoof-table td {
+    font-size: 10px;
+    color: var(--text-dim);
+    padding: 5px 8px;
+    border-bottom: 1px solid var(--border)80;
+    vertical-align: top;
+  }
+
+  .spoof-table tr:last-child td { border-bottom: none; }
+
+  .spoof-table .real { color: var(--green); font-weight: 500; }
+  .spoof-table .fake { color: var(--red); font-weight: 500; }
+
+  /* CVD panel */
+  .cvd-states {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .cvd-state {
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: #ffffff03;
+  }
+
+  .cvd-state .state-name {
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .cvd-state.bull .state-name { color: var(--green); }
+  .cvd-state.bear .state-name { color: var(--red); }
+  .cvd-state.warn .state-name { color: var(--yellow); }
+
+  .cvd-state .state-desc {
+    font-size: 9px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* Zone card */
+  .zone-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border)60;
+  }
+  .zone-row:last-child { border-bottom: none; }
+
+  .zone-price {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  .zone-type {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .zone-status {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 2px;
+  }
+
+  .zone-status.active { background: var(--yellow-dim); color: var(--yellow); }
+  .zone-status.broken { background: var(--red-dim); color: var(--red); text-decoration: line-through; }
+  .zone-status.clean { background: var(--green-dim); color: var(--green); }
+
+  /* Playbook card */
+  .play-step {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border)50;
+  }
+  .play-step:last-child { border-bottom: none; }
+
+  .step-num {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding-top: 1px;
+  }
+
+  .step-content .step-title {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .step-content .step-detail {
+    font-size: 10px;
+    color: var(--text-muted);
+    line-height: 1.45;
+  }
+
+  /* Invalidation card */
+  .invalid-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border)50;
+  }
+  .invalid-row:last-child { border-bottom: none; }
+
+  .invalid-icon {
+    font-size: 11px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .invalid-text {
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.45;
+  }
+
+  .invalid-text strong {
+    color: var(--red);
+    font-weight: 500;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 24px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer .left {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .footer .right {
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+  }
+
+  .compose-note {
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    padding: 10px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 1px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .compose-note .arrow {
+    color: var(--blue);
+    font-size: 10px;
+    letter-spacing: 0.05em;
+  }
+
+  @media print {
+    body { padding: 16px; background: #000; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="instrument">MES / MESH6</span>
+  <span class="header h1">Order Flow Strategy Cards</span>
+  <span class="level">6847.5 — Contested Zone</span>
+</div>
+
+<!-- Compose note -->
+<div class="compose-note">
+  <span>Cards are composable — each is a standalone signal. Stack them as AND conditions to increase conviction.</span>
+  <span class="arrow">TRIGGER → FILTER → CONFIRM → ENTRY → EXIT</span>
+</div>
+
+<!-- Row 1: Three core signal cards -->
+<div class="grid">
+
+  <!-- Absorption Detection -->
+  <div class="card green">
+    <div class="card-label">Signal Card 01 <span class="tag composable">COMPOSABLE</span></div>
+    <div class="card-title"><span class="glyph">◈</span>Absorption Detection</div>
+    <ul class="rule-list">
+      <li><span class="bullet">→</span><span>Price sits at level for <span class="val green">3+ bars</span> without breaking</span></li>
+      <li><span class="bullet">→</span><span>Heatmap band <span class="val green">stays bright</span> as price touches it</span></li>
+      <li><span class="bullet">→</span><span>Bubble stack grows at that price — <span class="val green">repeated prints</span></span></li>
+      <li><span class="bullet">→</span><span>CVD <span class="val green">holds flat or rises</span> while price tests low</span></li>
+    </ul>
+    <div class="divider"></div>
+    <div class="signal-grid">
+      <div class="signal-box bull">
+        <div class="sig-label">Bid Absorbed</div>
+        <div class="sig-text">Sellers hitting into green bubbles, price won't drop → long bias</div>
+      </div>
+      <div class="signal-box bear">
+        <div class="sig-label">Ask Absorbed</div>
+        <div class="sig-text">Buyers lifting into red bubbles, price won't rise → short bias</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spoof Detection -->
+  <div class="card red">
+    <div class="card-label">Signal Card 02 <span class="tag filter">FILTER</span></div>
+    <div class="card-title"><span class="glyph">◬</span>Spoof / Phantom Wall</div>
+    <table class="spoof-table">
+      <thead>
+        <tr>
+          <th>SIGNAL</th>
+          <th class="real">REAL WALL</th>
+          <th class="fake">SPOOF</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Heatmap on touch</td>
+          <td class="real">Dims / consumed</td>
+          <td class="fake">Stays bright / pulses</td>
+        </tr>
+        <tr>
+          <td>Volume dots</td>
+          <td class="real">Large bubbles print</td>
+          <td class="fake">Few or no prints</td>
+        </tr>
+        <tr>
+          <td>CVD at level</td>
+          <td class="real">Delta shifts</td>
+          <td class="fake">Flat — no trades</td>
+        </tr>
+        <tr>
+          <td>Price reaction</td>
+          <td class="real">Stalls / reverses</td>
+          <td class="fake">Blows through clean</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="divider"></div>
+    <ul class="rule-list">
+      <li><span class="bullet">!</span><span><span class="val red">Counter-trade:</span> band disappears + bubbles print above = spoof pulled, breakout follow</span></li>
+    </ul>
+  </div>
+
+  <!-- CVD Divergence -->
+  <div class="card blue">
+    <div class="card-label">Signal Card 03 <span class="tag confirm">CONFIRM</span></div>
+    <div class="card-title"><span class="glyph">◇</span>CVD Divergence</div>
+    <div class="cvd-states">
+      <div class="cvd-state bull">
+        <div class="state-name">Bullish</div>
+        <div class="state-desc">Price lower low, CVD higher low → hidden buying, long setup</div>
+      </div>
+      <div class="cvd-state bear">
+        <div class="state-name">Bearish</div>
+        <div class="state-desc">Price higher high, CVD lower high → distribution, short setup</div>
+      </div>
+      <div class="cvd-state warn">
+        <div class="state-name">Aligned</div>
+        <div class="state-desc">CVD and price agree → trend continuation, no fade</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <ul class="rule-list">
+      <li><span class="bullet">→</span><span>Current session: buyers <span class="val green">32,861</span> / sellers <span class="val red">30,280</span></span></li>
+      <li><span class="bullet">→</span><span>Net delta <span class="val green">+2,581</span> — mild buy bias, not conviction-level</span></li>
+      <li><span class="bullet">→</span><span>Watch zero line — cross = regime shift</span></li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- Row 2: Two zone + iceberg cards -->
+<div class="grid-2">
+
+  <!-- Key Levels -->
+  <div class="card yellow">
+    <div class="card-label">Zone Card 04 <span class="tag trigger">TRIGGER</span></div>
+    <div class="card-title"><span class="glyph">▣</span>Key Levels — Current Session</div>
+    <div class="zone-row">
+      <span class="zone-price yellow" style="color:var(--red)">6855.00</span>
+      <span class="zone-type" style="color:var(--text-muted)">Defended Ask Wall</span>
+      <span class="zone-status active">ACTIVE</span>
+    </div>
+    <div class="zone-row">
+      <span class="zone-price" style="color:var(--yellow)">6851.00</span>
+      <span class="zone-type" style="color:var(--text-muted)">Prior High / Range Top</span>
+      <span class="zone-status active">WATCH</span>
+    </div>
+    <div class="zone-row">
+      <span class="zone-price" style="color:var(--yellow)">6847.50</span>
+      <span class="zone-type" style="color:var(--yellow)">⚑ Contested Zone</span>
+      <span class="zone-status active">HOT</span>
+    </div>
+    <div class="zone-row">
+      <span class="zone-price" style="color:var(--blue)">6846.00</span>
+      <span class="zone-type" style="color:var(--text-muted)">HVN / Yellow Band</span>
+      <span class="zone-status clean">SUPPORT</span>
+    </div>
+    <div class="zone-row">
+      <span class="zone-price" style="color:var(--red)">6843.00</span>
+      <span class="zone-type" style="color:var(--text-muted)">Value Area Low</span>
+      <span class="zone-status active">WATCH</span>
+    </div>
+    <div class="divider"></div>
+    <ul class="rule-list">
+      <li><span class="bullet">!</span><span><span class="val yellow">6847.5</span> — 3 tests, failed long once. Only trade WITH confirmed absorption, not into it blindly.</span></li>
+    </ul>
+  </div>
+
+  <!-- Iceberg Detection -->
+  <div class="card orange">
+    <div class="card-label">Signal Card 05 <span class="tag composable">COMPOSABLE</span></div>
+    <div class="card-title"><span class="glyph">◎</span>Iceberg Detection</div>
+    <ul class="rule-list">
+      <li><span class="bullet">1</span><span>Heatmap shows <span class="val orange">thin or no visible order</span> at level</span></li>
+      <li><span class="bullet">2</span><span>Volume dots <span class="val orange">keep printing at same price</span> repeatedly — bubbles stacking</span></li>
+      <li><span class="bullet">3</span><span>Price <span class="val orange">won't move</span> despite apparent aggressor pressure</span></li>
+      <li><span class="bullet">4</span><span>Large Lot Tracker fires — <span class="val orange">single oversized print</span> at that level</span></li>
+    </ul>
+    <div class="divider"></div>
+    <ul class="rule-list">
+      <li><span class="bullet">△</span><span><span class="val orange">DOM cross-check:</span> DOM shows nothing → Bookmap shows bubble = iceberg. DOM shows 50 lots → no bubble = resting, not trading yet.</span></li>
+      <li><span class="bullet">△</span><span>Min lot filter set to <span class="val orange">5 contracts</span> — bubbles you see are real prints, not noise</span></li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- Row 3: Full-width playbook -->
+<div class="grid-full">
+  <div class="card neutral">
+    <div class="card-label">Playbook Card 06 — 6847.5 Zone <span class="tag composable">COMPOSABLE</span></div>
+    <div class="card-title"><span class="glyph">▶</span>Long Setup at Contested Zone — Condition Stack</div>
+
+    <div class="play-step">
+      <div class="step-num">01</div>
+      <div class="step-content">
+        <div class="step-title">TRIGGER — Price approaches 6847.5 from above</div>
+        <div class="step-detail">Zone Card fires. This is a known level. Do not pre-position. Wait for price to arrive and show its hand.</div>
+      </div>
+    </div>
+
+    <div class="play-step">
+      <div class="step-num">02</div>
+      <div class="step-content">
+        <div class="step-title">FILTER — Run Spoof Check (Card 02)</div>
+        <div class="step-detail">Watch heatmap at 6847–6848. If the yellow/red band disappears on touch → real orders consumed, bias long. If it stays bright with no dots → spoof, abort.</div>
+      </div>
+    </div>
+
+    <div class="play-step">
+      <div class="step-num">03</div>
+      <div class="step-content">
+        <div class="step-title">CONFIRM — Absorption fires (Card 01) + CVD holds (Card 03)</div>
+        <div class="step-detail">Need: green bubbles stacking at 6847.5 AND CVD not making new lows. Both required. One alone is insufficient after a prior failed long at this level.</div>
+      </div>
+    </div>
+
+    <div class="play-step">
+      <div class="step-num">04</div>
+      <div class="step-content">
+        <div class="step-title">CONFIRM — Iceberg present (Card 05) — optional but high conviction</div>
+        <div class="step-detail">If Bookmap shows repeated prints at 6847.5 that exceed what DOM shows → hidden bid. This is the highest conviction add to the long thesis.</div>
+      </div>
+    </div>
+
+    <div class="play-step">
+      <div class="step-num">05</div>
+      <div class="step-content">
+        <div class="step-title">ENTRY — First candle reclaim of 6848.25</div>
+        <div class="step-detail">Do not enter at 6847.5 on the test. Enter on the reclaim — when a candle closes back above 6848.25 with green bubbles visible. Momentum confirmed.</div>
+      </div>
+    </div>
+
+    <div class="play-step">
+      <div class="step-num">06</div>
+      <div class="step-content">
+        <div class="step-title">TARGET — 6851 first, 6853–6855 zone second</div>
+        <div class="step-detail">Scale at 6851 (prior range high). Full exit if red bubbles appear at 6853 with CVD rolling — that's the defended ask absorbing.</div>
+      </div>
+    </div>
+
+    <div class="play-step">
+      <div class="step-num">07</div>
+      <div class="step-content">
+        <div class="step-title">STOP — Close below 6846.00</div>
+        <div class="step-detail">HVN at 6846 is the last line. Breach with red bubbles = absorption failed, thesis dead. Exit without hesitation.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Row 4: Invalidation card -->
+<div class="grid-full">
+  <div class="card red">
+    <div class="card-label">Invalidation Card 07 <span class="tag exit">EXIT / ABORT</span></div>
+    <div class="card-title"><span class="glyph">✕</span>When the Thesis Dies — Hard Rules</div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 0;">
+      <div>
+        <div class="invalid-row">
+          <span class="invalid-icon" style="color:var(--red)">✕</span>
+          <span class="invalid-text"><strong>Heatmap band stays bright, no dots printing</strong> — spoof confirmed, no long</span>
+        </div>
+        <div class="invalid-row">
+          <span class="invalid-icon" style="color:var(--red)">✕</span>
+          <span class="invalid-text"><strong>CVD making new lows</strong> while price tests 6847.5 — sellers winning, don't fight it</span>
+        </div>
+        <div class="invalid-row">
+          <span class="invalid-icon" style="color:var(--red)">✕</span>
+          <span class="invalid-text"><strong>3rd+ test of 6847.5 with no bounce</strong> — level is softening, not absorbing</span>
+        </div>
+      </div>
+      <div>
+        <div class="invalid-row">
+          <span class="invalid-icon" style="color:var(--red)">✕</span>
+          <span class="invalid-text"><strong>Red bubbles appear at 6848–6849</strong> — sellers have moved their defense up, structure shifted</span>
+        </div>
+        <div class="invalid-row">
+          <span class="invalid-icon" style="color:var(--red)">✕</span>
+          <span class="invalid-text"><strong>Close below 6846 with volume</strong> — HVN broken, value area collapsing</span>
+        </div>
+        <div class="invalid-row">
+          <span class="invalid-icon" style="color:var(--yellow)">!</span>
+          <span class="invalid-text"><strong>Prior failed long here today</strong> — this level has burned you. Require 2 confirms minimum, not 1.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span class="left">MES · MESH6 · 06 Mar 2026 · Order Flow Setup</span>
+  <span class="right">Cards 01–03 composable independently · Stack for conviction · 6847.5 requires 2+ confirms after prior loss</span>
+</div>
+
+</body>
+</html>
